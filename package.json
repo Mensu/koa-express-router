@@ -1,21 +1,19 @@
 {
   "name": "koa-express-router",
-  "version": "0.1.4",
-  "description": "Express's Router adapted for Koa",
+  "version": "0.1.6",
+  "description": "Express's Router adapted for Koa v2.x",
   "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/Mensu/koa-express-router.git"
   },
   "author": "Mensu <yxshw55@qq.com>",
-  "files": [
-    "lib"
-  ],
   "scripts": {
     "test": "mocha"
   },
   "keywords": [
     "koa",
+    "koa2",
     "express",
     "router"
   ],
