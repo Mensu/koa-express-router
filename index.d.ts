@@ -110,7 +110,7 @@ declare module 'koa' {
     param(param: string, ...middleware: Array<IParamMiddleware>): Router
   }
 
-  interface Route extends BaseRoute {
+  interface Route {
     /**
      * HTTP get method
      */
