@@ -1,0 +1,34 @@
+{
+  "name": "koa-express-router",
+  "version": "0.1.1",
+  "description": "Express's Router adapted for Koa",
+  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mensu/koa-express-router.git"
+  },
+  "author": "Mensu <yxshw55@qq.com>",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "koa",
+    "express",
+    "router"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "array-flatten": "^2.1.1",
+    "debug": "^3.1.0",
+    "parseurl": "^1.3.2",
+    "path-to-regexp": "^1.7.0"
+  },
+  "devDependencies": {
+    "after": "^0.8.2",
+    "mocha": "^3.5.3",
+    "should": "^13.1.0"
+  }
+}
