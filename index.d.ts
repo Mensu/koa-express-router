@@ -1,12 +1,3 @@
-import * as _Router from '../utils/koa-router'
-import * as _Route from '../utils/koa-router/Route'
-
-const _router = new _Router()
-type BaseRouter = typeof _router
-
-const _route = new _Route()
-type BaseRoute = typeof _route
-
 declare module 'koa' {
   interface IContext {
     params: { [x: string]: string }
@@ -20,7 +11,7 @@ declare module 'koa' {
   interface Query {
     [key: string]: any
   }
-  interface Router extends BaseRouter {
+  interface Router {
     /**
      * Use the given middleware function, with optional path, defaulting to "/".
      *
