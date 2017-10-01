@@ -1,6 +1,6 @@
 # koa-express-router
 
-[![NPM Downloads](https://img.shields.io/npm/dm/koa-express-router.svg?style=flat)](https://npmjs.org/package/koa-express-router)
+[![NPM version](http://img.shields.io/npm/v/koa-express-router.svg?style=flat)](https://npmjs.org/package/koa-express-router) [![NPM Downloads](https://img.shields.io/npm/dm/koa-express-router.svg?style=flat)](https://npmjs.org/package/koa-express-router)
 
 > Express's Router adapted for Koa v2.x [koa](https://github.com/koajs/koa)
 
