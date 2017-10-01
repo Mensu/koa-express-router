@@ -108,6 +108,10 @@ declare module 'koa' {
      *
      */
     param(param: string, ...middleware: Array<IParamMiddleware>): Router
+    /**
+     * export router as a useable middleware
+     */
+    routes(usedByRouter?: boolean): IMiddleware
   }
 
   interface Route {
