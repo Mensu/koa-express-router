@@ -398,7 +398,7 @@ describe('Route', () => {
         return next();
       });
 
-      route.get({ state(val, ctx) { return val && val % 2 === 0; } }, async (ctx, next) => {
+      route.get({ state: val => val && val % 2 === 0 }, async (ctx, next) => {
         should(++order).equal(7);
         return next();
       });

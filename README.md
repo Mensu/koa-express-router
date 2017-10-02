@@ -1,8 +1,8 @@
 # koa-express-router
 
-[![NPM version](http://img.shields.io/npm/v/koa-express-router.svg?style=flat)](https://npmjs.org/package/koa-express-router) [![NPM Downloads](https://img.shields.io/npm/dm/koa-express-router.svg?style=flat)](https://npmjs.org/package/koa-express-router)
-
 > Express's Router adapted for [Koa](http://koajs.com) v2.x
+
+[![NPM version](http://img.shields.io/npm/v/koa-express-router.svg?style=flat)](https://npmjs.org/package/koa-express-router) [![NPM Downloads](https://img.shields.io/npm/dm/koa-express-router.svg?style=flat)](https://npmjs.org/package/koa-express-router)
 
 * Express-style routing using `router.use`, `router.all`, `router.METHOD`, `router.param` etc.
 * Support router prefix
@@ -42,7 +42,7 @@ subRtr.use(async (ctx, next) => {
 subRtr.route('/list')
   .all(async (ctx, next) => {
     if (/* some condition */false) {
-      return next('route');  // possible to skip the current route goto #1
+      return next('route');  // possible to skip the current route (goto #1)
     }
     ctx.body += '/sub/list all 1\n';
     return next();
@@ -126,7 +126,7 @@ app.listen(3000);
 
 ### Query Matching
 
-**Note:** this feature is only designed for simple matching. If the matching condition becomes complex, it is recommended that the user consider ``return next('route')`` for better readability
+**Note:** this feature is only designed for simple matching. If the matching condition becomes complex, it is recommended that the user consider ``return next('route')`` for better readability. See below.
 
 ```js
 // use an object for query matching schema
@@ -138,17 +138,17 @@ router.use({ type_id: 1, state: 'good' }, async (ctx, next) => {
 
 router.route('/list')
   // the value part can be a function
-  .get({ user_id: user_id => user_id < 1000 }, async (ctx, next) => {
+  .get({ user_id: val => val < 1000 }, async (ctx, next) => {
     // case ?user_id=30
     // ...
-    // break
+    // use next('route') to skip (like break in switch-case statements), if needed
     return next('route');
   })
   // the value part can be a regexp
   .get({ user_id: /00$/ }, async (ctx, next) => {
     // case ?user_id=3000
     // ...
-    // break
+    // use next('route') to skip, if needed
     return next('route');
   })
   .get(async (ctx, next) => {
@@ -156,7 +156,7 @@ router.route('/list')
     return next('route');
   });
 
-// complex query condition
+// complex query condition example
 router.post('/',
   async (ctx, next) => {
     const authorized = await checkAuthorized(ctx.query.user_id);
