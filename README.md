@@ -2,7 +2,7 @@
 
 > Express's Router adapted for [Koa](http://koajs.com) v2.x
 
-[![NPM version](http://img.shields.io/npm/v/koa-express-router.svg?style=flat)](https://npmjs.org/package/koa-express-router) [![NPM Downloads](https://img.shields.io/npm/dm/koa-express-router.svg?style=flat)](https://npmjs.org/package/koa-express-router)
+[![NPM version](http://img.shields.io/npm/v/koa-express-router.svg?style=flat)](https://npmjs.org/package/koa-express-router) [![NPM Downloads](https://img.shields.io/npm/dm/koa-express-router.svg?style=flat)](https://npmjs.org/package/koa-express-router) [![Build Status](https://travis-ci.org/Mensu/koa-express-router.svg?branch=master)](https://travis-ci.org/Mensu/koa-express-router)
 
 * Express-style routing using `router.use`, `router.all`, `router.METHOD`, `router.param` etc.
 * Support router prefix
