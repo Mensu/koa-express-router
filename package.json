@@ -11,6 +11,11 @@
   "scripts": {
     "test": "mocha"
   },
+  "files": [
+    "lib",
+    "index.d.ts",
+    "LICENSE"
+  ],
   "keywords": [
     "koa",
     "koa2",
