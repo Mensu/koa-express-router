@@ -1,6 +1,6 @@
 {
   "name": "koa-express-router",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Express's Router adapted for Koa v2.x",
   "main": "lib/index.js",
   "repository": {

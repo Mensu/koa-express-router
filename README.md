@@ -23,7 +23,7 @@ npm install koa-express-router
 
 ### Basics
 
-Just like ``express``.
+Just like ``express``
 
 #### Differences
 

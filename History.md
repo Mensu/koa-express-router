@@ -1,3 +1,8 @@
+0.3.3 / 2017-10-04
+==================
+
+  * Fix README and History issues
+
 0.3.2 / 2017-10-04
 ==================
 
@@ -14,6 +19,7 @@
 
   * Support **common http methods**
   * Refactor ``index.d.ts``
+  * Support changing default options by editing ``Router.defaultOptions``
 
 0.2.0 / 2017-10-02
 ==================
