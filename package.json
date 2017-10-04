@@ -1,6 +1,6 @@
 {
   "name": "koa-express-router",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Express's Router adapted for Koa v2.x",
   "main": "lib/index.js",
   "repository": {
@@ -23,6 +23,9 @@
     "router"
   ],
   "license": "MIT",
+  "engines": {
+    "node": ">=7.6"
+  },
   "dependencies": {
     "array-flatten": "^2.1.1",
     "debug": "^3.1.0",

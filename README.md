@@ -2,7 +2,7 @@
 
 > Express's Router adapted for [Koa](http://koajs.com) v2.x
 
-[![NPM version](http://img.shields.io/npm/v/koa-express-router.svg?style=flat)](https://npmjs.org/package/koa-express-router) [![NPM Downloads](https://img.shields.io/npm/dm/koa-express-router.svg?style=flat)](https://npmjs.org/package/koa-express-router) [![Build Status](https://travis-ci.org/Mensu/koa-express-router.svg?branch=master)](https://travis-ci.org/Mensu/koa-express-router)
+[![NPM version](http://img.shields.io/npm/v/koa-express-router.svg?style=flat)](https://npmjs.org/package/koa-express-router) [![NPM Downloads](https://img.shields.io/npm/dm/koa-express-router.svg?style=flat)](https://npmjs.org/package/koa-express-router) [![Build Status](https://travis-ci.org/Mensu/koa-express-router.svg?branch=master)](https://travis-ci.org/Mensu/koa-express-router) [![License](http://img.shields.io/npm/l/koa-express-router.svg?style=flat)](LICENSE.md)
 
 * Express-style routing using `router.use`, `router.all`, `router.METHOD`, `router.param` etc.
 * Support router prefix
@@ -28,7 +28,7 @@ Just like ``express``.
 #### Differences
 
 - use ``new`` to create instances
-- use .routes() to export a router
+- use ``.routes()`` or ``.routes(false)`` to export a router
 
 ```js
 const Koa = require('koa');
@@ -149,17 +149,24 @@ router.use({ type_id: 1, state: 'good' }, async (ctx, next) => {
 
 router.route('/list')
   // the value part can be a function
-  .get({ user_id: val => val < 1000 }, async (ctx, next) => {
+  .get({ user_id: val => Number(val) < 1000 }, async (ctx, next) => {
     // case ?user_id=30
     // ...
-    // use next('route') to skip (like break in switch-case statements), if needed
+    // use next('route') to break (like break in switch-case statements), if needed
     return next('route');
   })
   // the value part can be a regexp
   .get({ user_id: /00$/ }, async (ctx, next) => {
     // case ?user_id=3000
     // ...
-    // use next('route') to skip, if needed
+    // use next('route') to break
+    return next('route');
+  })
+  // the value part can be a string array (meaning or)
+  .get({ user_id: ['2222', '3333'] }, async (ctx, next) => {
+    // case ?user_id=2222 or ?user_id=3333
+    // ...
+    // use next('route') to break
     return next('route');
   })
   .get(async (ctx, next) => {
