@@ -23,9 +23,19 @@ npm install koa-express-router
 
 ### Basics
 
+Just like ``express``.
+
+#### Differences
+
+- use ``new`` to create instances
+- use .routes() to export a router
+
 ```js
 const Koa = require('koa');
 const Router = require('koa-express-router');
+
+// change default settings
+Router.defaultOptions.mergeParams = true;
 
 // define sub router with an optional prefix
 // NOTE: different from Express: use new to create instances
@@ -55,7 +65,8 @@ subRtr.route('/list')
   });
 
 subRtr.all('/list', async (ctx, next) => {
-  // after #1 the logic would come here
+  // #1
+  // the logic would come here
   ctx.body += '/sub/list all 2\n';
 });
 
@@ -164,13 +175,15 @@ router.post('/',
     return next('route'); // goto #2
   },
   async (ctx, next) => {
-    // authorized operations #1
+    // #1
+    // authorized operations
   },
 );
 
 router.post('/',
   async (ctx, next) => {
-    // limited operations due to not being authorized #2
+    // #2
+    // limited operations due to not being authorized
   },
 );
 
@@ -179,5 +192,5 @@ router.post('/',
 ## Caveats
 
 - Not ready for production use
-- Not support other less common HTTP methods
+- <s>Not support other less common HTTP methods</s>
 - Not benchmarked

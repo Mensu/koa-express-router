@@ -1,8 +1,7 @@
 const after = require('after');
 const should = require('should');
+const methods = require('methods');
 const Route = require('../lib/Route');
-
-const methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'];
 
 describe('Route', () => {
   it('should work without handlers', async () => {

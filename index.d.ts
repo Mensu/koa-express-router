@@ -20,15 +20,19 @@ interface Query {
 
 interface Options {
   /**
-     * When `true` the route will be case sensitive. (default: `false`)
-     */
+   * When `true` the route will be case sensitive.
+   * @default false
+   */
   caseSensitive?: boolean
   /**
-     * When `false` the trailing slash is optional. (default: `false`)
-     */
+   * When `false` the trailing slash is optional.
+   * @default false
+   */
   strict?: boolean
   /**
-   * merge param from upper router
+   * Preserve the ctx.params values from the parent router.
+   * If the parent and the child have conflicting param names, the child’s value take precedence.
+   * @default false
    */
   mergeParams?: boolean
   /**
@@ -62,57 +66,38 @@ declare class Router {
    *
    * @public
    */
-  use(...middleware: Array<Koa.IMiddleware>): Router;
-  use(path: string | RegExp, ...middleware: Array<Koa.IMiddleware>): Router;
-  use(path: string | RegExp, query: Query, ...middleware: Array<Koa.IMiddleware>): Router;
+  use(...middleware: Koa.IMiddleware[]): Router;
+  use(path: string | RegExp, ...middleware: Koa.IMiddleware[]): Router;
+  use(path: string | RegExp, query: Query, ...middleware: Koa.IMiddleware[]): Router;
 
-  /**
-   * HTTP get method
-   */
-  get(path: string | RegExp, ...middleware: Array<Koa.IMiddleware>): Router;
-  get(path: string | RegExp, query: Query, ...middleware: Array<Koa.IMiddleware>): Router;
+  all: IRouterHandler
+  get: IRouterHandler
+  post: IRouterHandler
+  put: IRouterHandler
+  delete: IRouterHandler
+  patch: IRouterHandler
+  options: IRouterHandler
+  head: IRouterHandler
 
-  /**
-   * HTTP post method
-   */
-  post(path: string | RegExp, ...middleware: Array<Koa.IMiddleware>): Router;
-  post(path: string | RegExp, query: Query, ...middleware: Array<Koa.IMiddleware>): Router;
-
-  /**
-   * HTTP put method
-   */
-  put(path: string | RegExp, ...middleware: Array<Koa.IMiddleware>): Router;
-  put(path: string | RegExp, query: Query, ...middleware: Array<Koa.IMiddleware>): Router;
-
-  /**
-   * HTTP delete method
-   */
-  delete(path: string | RegExp, ...middleware: Array<Koa.IMiddleware>): Router;
-  delete(path: string | RegExp, query: Query, ...middleware: Array<Koa.IMiddleware>): Router;
-
-  /**
-   * HTTP head method
-   */
-  head(path: string | RegExp, ...middleware: Array<Koa.IMiddleware>): Router;
-  head(path: string | RegExp, query: Query, ...middleware: Array<Koa.IMiddleware>): Router;
-
-  /**
-   * HTTP options method
-   */
-  options(path: string | RegExp, ...middleware: Array<Koa.IMiddleware>): Router;
-  options(path: string | RegExp, query: Query, ...middleware: Array<Koa.IMiddleware>): Router;
-
-  /**
-   * HTTP path method
-   */
-  patch(path: string | RegExp, ...middleware: Array<Koa.IMiddleware>): Router;
-  patch(path: string | RegExp, query: Query, ...middleware: Array<Koa.IMiddleware>): Router;
-
-  /**
-   * all
-   */
-  all(path: string | RegExp, ...middleware: Array<Koa.IMiddleware>): Router;
-  all(path: string | RegExp, query: Query, ...middleware: Array<Koa.IMiddleware>): Router;
+  checkout: IRouterHandler
+  connect: IRouterHandler
+  copy: IRouterHandler
+  lock: IRouterHandler
+  merge: IRouterHandler
+  mkactivity: IRouterHandler
+  mkcol: IRouterHandler
+  move: IRouterHandler
+  "m-search": IRouterHandler
+  notify: IRouterHandler
+  propfind: IRouterHandler
+  proppatch: IRouterHandler
+  purge: IRouterHandler
+  report: IRouterHandler
+  search: IRouterHandler
+  subscribe: IRouterHandler
+  trace: IRouterHandler
+  unlock: IRouterHandler
+  unsubscribe: IRouterHandler
 
   /**
    * Map the given param placeholder `name`(s) to the given callback.
@@ -143,7 +128,7 @@ declare class Router {
    * ```
    *
    */
-  param(param: string, ...middleware: Array<Koa.IParamMiddleware>): Router
+  param(param: string, ...middleware: Koa.IParamMiddleware[]): Router
 
   /**
    * Create a new Route for the given path.
@@ -155,56 +140,62 @@ declare class Router {
    *
    */
   route(path: string, query?: Query): Route
+
+  public static defaultOptions: Options
 }
 
 interface Route {
-  /**
-   * HTTP get method
-   */
-  get(...middleware: Array<Koa.IMiddleware>): Route
-  get(query: Query, ...middleware: Array<Koa.IMiddleware>): Route
+  all: IRouteHandler
+  get: IRouteHandler
+  post: IRouteHandler
+  put: IRouteHandler
+  delete: IRouteHandler
+  patch: IRouteHandler
+  options: IRouteHandler
+  head: IRouteHandler
 
-  /**
-   * HTTP post method
-   */
-  post(...middleware: Array<Koa.IMiddleware>): Route
-  post(query: Query, ...middleware: Array<Koa.IMiddleware>): Route
+  checkout: IRouteHandler
+  connect: IRouteHandler
+  copy: IRouteHandler
+  lock: IRouteHandler
+  merge: IRouteHandler
+  mkactivity: IRouteHandler
+  mkcol: IRouteHandler
+  move: IRouteHandler
+  "m-search": IRouteHandler
+  notify: IRouteHandler
+  propfind: IRouteHandler
+  proppatch: IRouteHandler
+  purge: IRouteHandler
+  report: IRouteHandler
+  search: IRouteHandler
+  subscribe: IRouteHandler
+  trace: IRouteHandler
+  unlock: IRouteHandler
+  unsubscribe: IRouteHandler
+}
 
-  /**
-   * HTTP put method
-   */
-  put(...middleware: Array<Koa.IMiddleware>): Route
-  put(query: Query, ...middleware: Array<Koa.IMiddleware>): Route
+type PathParams = string | RegExp | (string | RegExp)[];
 
+interface IRouteHandler {
   /**
-   * HTTP patch method
+   * regist HTTP method handler
    */
-  patch(...middleware: Array<Koa.IMiddleware>): Route
-  patch(query: Query, ...middleware: Array<Koa.IMiddleware>): Route
-
+  (...middlewares: Koa.IMiddleware[]): Route
   /**
-   * HTTP delete method
+   * regist HTTP method handler with query matching
    */
-  delete(...middleware: Array<Koa.IMiddleware>): Route
-  delete(query: Query, ...middleware: Array<Koa.IMiddleware>): Route
-
+  (query: Query, ...middleware: Koa.IMiddleware[]): Route
+}
+interface IRouterHandler {
   /**
-   * HTTP head method
+   * regist HTTP method handler
    */
-  head(...middleware: Array<Koa.IMiddleware>): Route
-  head(query: Query, ...middleware: Array<Koa.IMiddleware>): Route
-
+  (path: PathParams, ...middlewares: Koa.IMiddleware[]): Router
   /**
-   * HTTP options method
+   * regist HTTP method handler with query matching
    */
-  options(...middleware: Array<Koa.IMiddleware>): Route
-  options(query: Query, ...middleware: Array<Koa.IMiddleware>): Route
-
-  /**
-   * all
-   */
-  all(...middleware: Array<Koa.IMiddleware>): Route
-  all(query: Query, ...middleware: Array<Koa.IMiddleware>): Route
+  (path: PathParams, query: Query, ...middleware: Koa.IMiddleware[]): Router
 }
 
 export = Router

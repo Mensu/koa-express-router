@@ -1,9 +1,8 @@
+const assert = require('assert');
 const after = require('after');
 const should = require('should');
+const methods = require('methods');
 const Router = require('../lib');
-const assert = require('assert');
-
-const methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'];
 
 describe('Router', () => {
   it('should return a function with router methods', () => {
@@ -11,6 +10,8 @@ describe('Router', () => {
     assert(typeof router.routes === 'function');
     assert(typeof router.get === 'function');
     assert(typeof router.handle === 'function');
+    assert(typeof router.routes() === 'function');
+    assert(typeof router.routes(false) === 'function');
     assert(typeof router.use === 'function');
   });
 
@@ -23,7 +24,7 @@ describe('Router', () => {
       });
       router.use('/foo', another.routes());
 
-      return router.handle({ url: '/foo/bar', method: 'GET', end: done })
+      return router.routes(false)({ url: '/foo/bar', method: 'GET', end: done })
         .catch(reject);
     });
   });
@@ -38,7 +39,7 @@ describe('Router', () => {
       });
       router.use('/:foo', another.routes());
 
-      return router.handle({ url: '/test/route', method: 'GET', end: done })
+      return router.routes(false)({ url: '/test/route', method: 'GET', end: done })
         .catch(reject);
     });
   });
@@ -52,7 +53,7 @@ describe('Router', () => {
     });
 
     return new Promise((done, reject) => {
-      router.handle({ url: '', method: 'GET' }, done).catch(reject);
+      router.routes(false)({ url: '', method: 'GET' }, done).catch(reject);
     });
   });
 
@@ -64,7 +65,7 @@ describe('Router', () => {
     });
 
     return new Promise((done, reject) => {
-      router.handle({ method: 'GET' }, done).catch(reject);
+      router.routes(false)({ method: 'GET' }, done).catch(reject);
     });
   });
 
@@ -81,7 +82,7 @@ describe('Router', () => {
     });
 
     return new Promise((done, reject) => {
-      router.handle({ url: '/', method: 'GET', end: done })
+      router.routes(false)({ url: '/', method: 'GET', end: done })
         .catch(reject);
     });
   });
@@ -103,7 +104,7 @@ describe('Router', () => {
             return done();
           },
         };
-        router.handle(ctx).catch(reject);
+        router.routes(false)(ctx).catch(reject);
       });
     });
   });
@@ -166,7 +167,7 @@ describe('Router', () => {
 
       return new Promise((done, reject) => {
         promise.then(done).catch(reject);
-        router.handle({ url: '/foo', method: 'GET' }, done).catch(reject);
+        router.routes(false)({ url: '/foo', method: 'GET' }, done).catch(reject);
       });
     });
 
@@ -195,7 +196,7 @@ describe('Router', () => {
 
       return new Promise((done, reject) => {
         promise.then(done).catch(reject);
-        router.handle({ url: '/foo/2', method: 'GET' }).catch(reject);
+        router.routes(false)({ url: '/foo/2', method: 'GET' }).catch(reject);
       });
     });
 
@@ -225,7 +226,7 @@ describe('Router', () => {
       });
       return new Promise((done, reject) => {
         promise.then(done).catch(reject);
-        router.handle({ url: '/bob', method: 'GET' }).catch(reject);
+        router.routes(false)({ url: '/bob', method: 'GET' }).catch(reject);
       });
     });
 
@@ -258,7 +259,7 @@ describe('Router', () => {
 
       return new Promise((done, reject) => {
         promise.then(done).catch(reject);
-        router.handle({ url: '/', method: 'GET' }, done).catch(reject);
+        router.routes(false)({ url: '/', method: 'GET' }, done).catch(reject);
       });
     });
   });
@@ -275,7 +276,7 @@ describe('Router', () => {
       });
 
       return new Promise((done, reject) => {
-        router.handle(ctx, async () => {
+        router.routes(false)(ctx, async () => {
           assert.equal(ctx.hit, 1);
           return done();
         })
@@ -294,7 +295,7 @@ describe('Router', () => {
       });
 
       return new Promise((done, reject) => {
-        router.handle(ctx, async () => {
+        router.routes(false)(ctx, async () => {
           assert.equal(ctx.hit, 1);
           return done();
         })
@@ -313,7 +314,7 @@ describe('Router', () => {
       });
 
       return new Promise((done, reject) => {
-        router.handle(ctx, async () => {
+        router.routes(false)(ctx, async () => {
           assert.equal(ctx.hit, 1);
           return done();
         })
@@ -332,7 +333,7 @@ describe('Router', () => {
       });
 
       return new Promise((done, reject) => {
-        router.handle(request, () => {
+        router.routes(false)(request, () => {
           assert.equal(request.hit, 1);
           return done();
         })
@@ -358,7 +359,7 @@ describe('Router', () => {
 
 
       return new Promise((done, reject) => {
-        router.handle(ctx, () => {
+        router.routes(false)(ctx, () => {
           assert.equal(ctx.hit, 2);
           return done();
         })
@@ -389,7 +390,7 @@ describe('Router', () => {
       });
 
       return new Promise((done, reject) => {
-        router.handle(ctx, () => {
+        router.routes(false)(ctx, () => {
           assert.equal(ctx.hit, 3);
           return done();
         })
@@ -408,7 +409,7 @@ describe('Router', () => {
       const url = '/foo?bar=baz';
 
       for (const method of methods) {
-        await router.handle({ url, method });
+        await router.routes(false)({ url, method });
       }
 
       assert.equal(count, methods.length);
@@ -429,10 +430,11 @@ describe('Router', () => {
 
       router.all('*', ctx => ctx.end());
 
-      await router.handle({ url: '/', method: 'GET', end: cb }, no);
-      await router.handle({ url: '/foo', method: 'GET', end: cb }, no);
-      await router.handle({ url: 'foo', method: 'GET', end: cb }, no);
-      await router.handle({ url: '*', method: 'GET', end: cb }, no);
+      const handle = router.routes(false);
+      await handle({ url: '/', method: 'GET', end: cb }, no);
+      await handle({ url: '/foo', method: 'GET', end: cb }, no);
+      await handle({ url: 'foo', method: 'GET', end: cb }, no);
+      await handle({ url: '*', method: 'GET', end: cb }, no);
 
       return promise;
     });
@@ -480,10 +482,11 @@ describe('Router', () => {
         ctx.end();
       });
 
-      await router.handle({ url: '/', method: 'GET', end: cb }, no);
-      await router.handle({ url: '/foo', method: 'GET', end: cb }, no);
-      await router.handle({ url: 'foo', method: 'GET', end: cb }, no);
-      await router.handle({ url: '*', method: 'GET', end: cb }, no);
+      const handle = router.routes(false);
+      await handle({ url: '/', method: 'GET', end: cb }, no);
+      await handle({ url: '/foo', method: 'GET', end: cb }, no);
+      await handle({ url: 'foo', method: 'GET', end: cb }, no);
+      await handle({ url: '*', method: 'GET', end: cb }, no);
       return promise;
     });
 
@@ -509,7 +512,7 @@ describe('Router', () => {
       });
       promise.catch(() => {});
 
-      await router.handle({ url: '/foo', method: 'GET' });
+      await router.routes(false)({ url: '/foo', method: 'GET' });
       return promise;
     });
   });
@@ -529,7 +532,7 @@ describe('Router', () => {
       });
 
       return new Promise((done, reject) => {
-        router.handle({ url: '/foo/123/bar', method: 'get' }, done)
+        router.routes(false)({ url: '/foo/123/bar', method: 'get' }, done)
           .catch(reject);
       });
     });
@@ -549,7 +552,7 @@ describe('Router', () => {
       });
 
       return new Promise((done, reject) => {
-        router.handle({ url: '/foo/123/bar/baz', method: 'get' }, done)
+        router.routes(false)({ url: '/foo/123/bar/baz', method: 'get' }, done)
           .catch(reject);
       });
     });
@@ -572,7 +575,7 @@ describe('Router', () => {
       router.use('/foo/:user/', sub.routes());
 
       return new Promise((done, reject) => {
-        router.handle(ctx, async () => {
+        router.routes(false)(ctx, async () => {
           assert.equal(count, 1);
           assert.equal(ctx.user, 'bob');
           return done();
@@ -605,19 +608,20 @@ describe('Router', () => {
       router.use('/foo/:starId(.*)/sub/', sub.routes());
 
       return new Promise((done, reject) => {
+        const handle = router.routes(false);
         (async () => {
           const ctx1 = { url: '/foo/3/sub/list', method: 'get' };
-          await router.handle(ctx1);
+          await handle(ctx1);
           assert.equal(count, 2);
           assert.equal(ctx1.id, 3);
           assert.equal(ctx1.starId, 3);
 
           const ctx2 = { url: '/foo/bad/sub/list', method: 'get' };
-          await router.handle(ctx2);
+          await handle(ctx2);
           assert.equal(count, 3);
 
           const ctx3 = { url: '/foo/bad/sub/starList', method: 'get' };
-          await router.handle(ctx3);
+          await handle(ctx3);
           assert.equal(count, 4);
           assert.equal(ctx3.starId, 'bad');
           return done();
@@ -643,7 +647,7 @@ describe('Router', () => {
       router.use('/:user/bob/', sub.routes());
 
       return new Promise((done, reject) => {
-        router.handle(ctx, () => {
+        router.routes(false)(ctx, () => {
           assert.equal(count, 2);
           assert.equal(ctx.user, 'foo');
           return done();
@@ -678,14 +682,14 @@ describe('Router', () => {
       router.use('/foo/:ms/', new Router().routes());
       router.use('/foo/:ms/', sub.routes());
 
-      await router.handle(req1, (err) => {
+      await router.routes(false)(req1, (err) => {
         assert.ifError(err);
         assert.equal(req1.ms, 50);
         assert.equal(req1.originalUrl, '/foo/50/bar');
         return done();
       });
 
-      await router.handle(req2, (err) => {
+      await router.routes(false)(req2, (err) => {
         assert.ifError(err);
         assert.equal(req2.ms, 10);
         assert.equal(req2.originalUrl, '/foo/10/bar');
@@ -718,9 +722,10 @@ describe('Router', () => {
       });
 
       return new Promise((done, reject) => {
+        const handle = router.routes(false);
         (async () => {
-          await router.handle({ url: '/', method: 'GET', query: { state: 'started' } });
-          await router.handle({ url: '/', method: 'GET', query: { state: 'progressing' } });
+          await handle({ url: '/', method: 'GET', query: { state: 'started' } });
+          await handle({ url: '/', method: 'GET', query: { state: 'progressing' } });
           should(order).equal(4);
           return done();
         })().catch(reject);
@@ -751,15 +756,16 @@ describe('Router', () => {
       });
 
       return new Promise((done, reject) => {
+        const handle = router.routes(false);
         (async () => {
           // 1, 2
-          await router.handle({ url: '/', method: 'GET', query: { state: 'progressing' } });
+          await handle({ url: '/', method: 'GET', query: { state: 'progressing' } });
           // 3
-          await router.handle({ url: '/', method: 'GET', query: {} });
+          await handle({ url: '/', method: 'GET', query: {} });
           // 4, 5
-          await router.handle({ url: '/', method: 'GET', query: { state: 'started' } });
+          await handle({ url: '/', method: 'GET', query: { state: 'started' } });
           // 6
-          await router.handle({ url: '/', method: 'GET', query: { state: 'end' } });
+          await handle({ url: '/', method: 'GET', query: { state: 'end' } });
           should(order).equal(6);
           return done();
         })().catch(reject);
@@ -791,17 +797,18 @@ describe('Router', () => {
       });
 
       return new Promise((done, reject) => {
+        const handle = router.routes(false);
         (async () => {
           // 1, 2
-          await router.handle({ url: '/', method: 'GET', query: { state: '1' } });
+          await handle({ url: '/', method: 'GET', query: { state: '1' } });
           // 3
-          await router.handle({ url: '/', method: 'GET', query: {} });
+          await handle({ url: '/', method: 'GET', query: {} });
           // 4, 5
-          await router.handle({ url: '/', method: 'GET', query: { state: 'false' } });
+          await handle({ url: '/', method: 'GET', query: { state: 'false' } });
           // 6, 7
-          await router.handle({ url: '/', method: 'GET', query: { state: '4' } });
+          await handle({ url: '/', method: 'GET', query: { state: '4' } });
           // 8
-          await router.handle({ url: '/', method: 'GET', query: { state: '[1, 2]' } });
+          await handle({ url: '/', method: 'GET', query: { state: '[1, 2]' } });
           should(order).equal(8);
           return done();
         })().catch(reject);
