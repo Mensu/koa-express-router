@@ -179,21 +179,21 @@ type PathParams = string | RegExp | (string | RegExp)[];
 
 interface IRouteHandler {
   /**
-   * regist HTTP method handler
+   * register HTTP method handlers
    */
   (...middlewares: Koa.IMiddleware[]): Route
   /**
-   * regist HTTP method handler with query matching
+   * register HTTP method handlers with query matching
    */
   (query: Query, ...middleware: Koa.IMiddleware[]): Route
 }
 interface IRouterHandler {
   /**
-   * regist HTTP method handler
+   * register HTTP method handlers
    */
   (path: PathParams, ...middlewares: Koa.IMiddleware[]): Router
   /**
-   * regist HTTP method handler with query matching
+   * register HTTP method handlers with query matching
    */
   (path: PathParams, query: Query, ...middleware: Koa.IMiddleware[]): Router
 }
