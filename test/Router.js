@@ -167,7 +167,7 @@ describe('Router', () => {
 
       return new Promise((done, reject) => {
         promise.then(done).catch(reject);
-        router.routes(false)({ url: '/foo', method: 'GET' }, done).catch(reject);
+        router.routes(false)({ url: '/foo', method: 'GET' }).catch(reject);
       });
     });
 
@@ -259,7 +259,7 @@ describe('Router', () => {
 
       return new Promise((done, reject) => {
         promise.then(done).catch(reject);
-        router.routes(false)({ url: '/', method: 'GET' }, done).catch(reject);
+        router.routes(false)({ url: '/', method: 'GET' }).catch(reject);
       });
     });
   });
@@ -506,7 +506,7 @@ describe('Router', () => {
 
       const promise = new Promise((done) => {
         router.use([fn1, fn2], (ctx) => {
-          assert.equal(++count, 3);
+          assert.equal(count, 2);
           return done();
         });
       });
@@ -515,10 +515,28 @@ describe('Router', () => {
       await router.routes(false)({ url: '/foo', method: 'GET' });
       return promise;
     });
+
+    it('should accept array of path', async () => {
+      let count = 0;
+      const router = new Router();
+
+      router.use(['/foo', /\/[0-9]{2}/, '/bar'], (ctx, next) => {
+        ++count;
+        return next();
+      });
+
+      const handle = router.routes(false);
+      await handle({ url: '/foo', method: 'GET' });
+      await handle({ url: '/bad', method: 'GET' });
+      await handle({ url: '/bar', method: 'GET' });
+      await handle({ url: '/10', method: 'GET' });
+      should(count).equal(3);
+    });
   });
 
   describe('.param', () => {
     it('should call param function when routing VERBS', async () => {
+      let hit = 0;
       const router = new Router();
 
       router.param('id', (ctx, next, id) => {
@@ -528,16 +546,21 @@ describe('Router', () => {
 
       router.get('/foo/:id/bar', (ctx, next) => {
         assert.equal(ctx.params.id, '123');
+        assert.equal(hit++, 0);
         return next();
       });
 
       return new Promise((done, reject) => {
-        router.routes(false)({ url: '/foo/123/bar', method: 'get' }, done)
+        router.routes(false)({ url: '/foo/123/bar', method: 'get' }, () => {
+          assert.equal(hit, 1);
+          return done();
+        })
           .catch(reject);
       });
     });
 
     it('should call param function when routing middleware', async () => {
+      let hit = 0;
       const router = new Router();
 
       router.param('id', (ctx, next, id) => {
@@ -548,22 +571,29 @@ describe('Router', () => {
       router.use('/foo/:id/bar', (ctx, next) => {
         assert.equal(ctx.params.id, '123');
         assert.equal(ctx.url, '/baz');
+        assert.equal(hit++, 0);
         return next();
       });
 
       return new Promise((done, reject) => {
-        router.routes(false)({ url: '/foo/123/bar/baz', method: 'get' }, done)
+        router.routes(false)({ url: '/foo/123/bar/baz', method: 'get' }, () => {
+          assert.equal(hit, 1);
+          return done();
+        })
           .catch(reject);
       });
     });
 
     it('should only call once per request', async () => {
       let count = 0;
-      const ctx = { url: '/foo/bob/bar', method: 'get' };
+      const ctx = { hit: 0, url: '/foo/bob/bar', method: 'get' };
       const router = new Router();
       const sub = new Router();
 
-      sub.get('/bar', (ctx, next) => next());
+      sub.get('/bar', (ctx, next) => {
+        assert.equal(ctx.hit++, 0);
+        return next();
+      });
 
       router.param('user', (ctx, next, user) => {
         count++;
@@ -577,6 +607,7 @@ describe('Router', () => {
       return new Promise((done, reject) => {
         router.routes(false)(ctx, async () => {
           assert.equal(count, 1);
+          assert.equal(ctx.hit, 1);
           assert.equal(ctx.user, 'bob');
           return done();
         })
@@ -589,8 +620,12 @@ describe('Router', () => {
       const router = new Router();
       const sub = new Router();
 
-      sub.get('/list', (ctx, next) => next());
-      sub.get('/starList', (ctx, next) => next());
+      sub.get('/list', (ctx, next) => {
+        assert.equal(ctx.hit++, 0);
+      });
+      sub.get('/starList', (ctx, next) => {
+        assert.equal(ctx.hit++, 0);
+      });
 
       router.param('id', (ctx, next, id) => {
         count++;
@@ -610,20 +645,26 @@ describe('Router', () => {
       return new Promise((done, reject) => {
         const handle = router.routes(false);
         (async () => {
-          const ctx1 = { url: '/foo/3/sub/list', method: 'get' };
+          const ctx1 = { hit: 0, url: '/foo/3/sub/list', method: 'get' };
           await handle(ctx1);
-          assert.equal(count, 2);
-          assert.equal(ctx1.id, 3);
-          assert.equal(ctx1.starId, 3);
+          assert.equal(count, 1);
+          assert.equal(ctx1.id, '3');
+          assert.equal(ctx1.starId, undefined);
+          assert.equal(ctx1.hit, 1);
 
-          const ctx2 = { url: '/foo/bad/sub/list', method: 'get' };
+          const ctx2 = { hit: 0, url: '/foo/bad/sub/list', method: 'get' };
           await handle(ctx2);
-          assert.equal(count, 3);
+          assert.equal(count, 2);
+          assert.equal(ctx2.id, undefined);
+          assert.equal(ctx2.starId, 'bad');
+          assert.equal(ctx2.hit, 1);
 
-          const ctx3 = { url: '/foo/bad/sub/starList', method: 'get' };
+          const ctx3 = { hit: 0, url: '/foo/bad/sub/starList', method: 'get' };
           await handle(ctx3);
-          assert.equal(count, 4);
+          assert.equal(count, 3);
+          assert.equal(ctx3.id, undefined);
           assert.equal(ctx3.starId, 'bad');
+          assert.equal(ctx3.hit, 1);
           return done();
         })().catch(reject);
       });
@@ -631,11 +672,14 @@ describe('Router', () => {
 
     it('should call when values differ', async () => {
       let count = 0;
-      const ctx = { url: '/foo/bob/bar', method: 'get' };
+      const ctx = { hit: 0, url: '/foo/bob/bar', method: 'get' };
       const router = new Router();
       const sub = new Router();
 
-      sub.get('/bar', (ctx, next) => next());
+      sub.get('/bar', (ctx, next) => {
+        assert.equal(ctx.hit++, 0);
+        return next();
+      });
 
       router.param('user', (ctx, next, user) => {
         count++;
@@ -650,6 +694,7 @@ describe('Router', () => {
         router.routes(false)(ctx, () => {
           assert.equal(count, 2);
           assert.equal(ctx.user, 'foo');
+          assert.equal(ctx.hit, 1);
           return done();
         })
           .catch(reject);
@@ -659,8 +704,8 @@ describe('Router', () => {
 
   describe('parallel requests', () => {
     it('should not mix requests', async () => {
-      const req1 = { url: '/foo/50/bar', method: 'get' };
-      const req2 = { url: '/foo/10/bar', method: 'get' };
+      const req1 = { hit: 0, url: '/foo/50/bar', method: 'get' };
+      const req2 = { hit: 0, url: '/foo/10/bar', method: 'get' };
       const router = new Router();
       const sub = new Router();
 
@@ -670,7 +715,10 @@ describe('Router', () => {
       });
       promise.catch(() => {});
 
-      sub.get('/bar', (ctx, next) => next());
+      sub.get('/bar', (ctx, next) => {
+        assert.equal(ctx.hit++, 0);
+        return next();
+      });
 
       router.param('ms', async (ctx, next, ms) => {
         ms = parseInt(ms, 10);
@@ -686,6 +734,7 @@ describe('Router', () => {
         assert.ifError(err);
         assert.equal(req1.ms, 50);
         assert.equal(req1.originalUrl, '/foo/50/bar');
+        assert.equal(req1.hit, 1);
         return done();
       });
 
@@ -693,6 +742,7 @@ describe('Router', () => {
         assert.ifError(err);
         assert.equal(req2.ms, 10);
         assert.equal(req2.originalUrl, '/foo/10/bar');
+        assert.equal(req2.hit, 1);
         return done();
       });
     });
