@@ -18,6 +18,33 @@ interface Query {
   [key: string]: any
 }
 
+type PathParams = string | RegExp | (string | RegExp)[];
+
+interface IRouteHandler {
+  /**
+   * register HTTP method handlers
+   * @api public
+   */
+  (...middlewares: Koa.IMiddleware[]): Route
+  /**
+   * register HTTP method handlers with query matching
+   * @api public
+   */
+  (query: Query, ...middleware: Koa.IMiddleware[]): Route
+}
+interface IRouterHandler {
+  /**
+   * register HTTP method handlers
+   * @api public
+   */
+  (path: PathParams, ...middlewares: Koa.IMiddleware[]): Router
+  /**
+   * register HTTP method handlers with query matching
+   * @api public
+   */
+  (path: PathParams, query: Query, ...middleware: Koa.IMiddleware[]): Router
+}
+
 interface Options {
   /**
    * When `true` the route will be case sensitive.
@@ -30,7 +57,7 @@ interface Options {
    */
   strict?: boolean
   /**
-   * Preserve the ctx.params values from the parent router.
+   * Preserve the ``ctx.params`` values from the parent router.
    * If the parent and the child have conflicting param names, the child’s value take precedence.
    * @default false
    */
@@ -44,11 +71,14 @@ interface Options {
 declare class Router {
   /**
    * Initialize a new Router
+   * @api public
    */
   constructor(options?: Options)
 
   /**
    * export router as a useable middleware
+   * @param {boolean} [usedByRouter=true] default to ``true``. Use ``false`` if to be used by ``app.use``, ``compose`` or something other than a Router from ``koa-express-router``
+   * @api public
    */
   routes(usedByRouter?: boolean): Koa.IMiddleware
 
@@ -64,11 +94,39 @@ declare class Router {
    * handlers can operate without any code changes regardless of the "prefix"
    * pathname.
    *
-   * @public
+   * @api public
    */
   use(...middleware: Koa.IMiddleware[]): Router;
-  use(path: string | RegExp, ...middleware: Koa.IMiddleware[]): Router;
-  use(path: string | RegExp, query: Query, ...middleware: Koa.IMiddleware[]): Router;
+  /**
+   * Use the given middleware function, with optional path, defaulting to "/".
+   *
+   * Use (like `.all`) will run for any http METHOD, but it will not add
+   * handlers for those methods so OPTIONS requests will not consider `.use`
+   * functions even if they could respond.
+   *
+   * The other difference is that _route_ path is stripped and not visible
+   * to the handler function. The main effect of this feature is that mounted
+   * handlers can operate without any code changes regardless of the "prefix"
+   * pathname.
+   *
+   * @api public
+   */
+  use(path: PathParams, ...middleware: Koa.IMiddleware[]): Router;
+  /**
+   * Use the given middleware function, with optional path, defaulting to "/".
+   *
+   * Use (like `.all`) will run for any http METHOD, but it will not add
+   * handlers for those methods so OPTIONS requests will not consider `.use`
+   * functions even if they could respond.
+   *
+   * The other difference is that _route_ path is stripped and not visible
+   * to the handler function. The main effect of this feature is that mounted
+   * handlers can operate without any code changes regardless of the "prefix"
+   * pathname.
+   *
+   * @api public
+   */
+  use(path: PathParams, query: Query, ...middleware: Koa.IMiddleware[]): Router;
 
   all: IRouterHandler
   get: IRouterHandler
@@ -126,7 +184,7 @@ declare class Router {
    *    return next();
    *  });
    * ```
-   *
+   * @api public
    */
   param(param: string, ...middleware: Koa.IParamMiddleware[]): Router
 
@@ -137,10 +195,13 @@ declare class Router {
    *
    * See the Route api documentation for details on adding handlers
    * and middleware to routes.
-   *
+   * @api public
    */
   route(path: string, query?: Query): Route
 
+  /**
+   * default options of a Router
+   */
   public static defaultOptions: Options
 }
 
@@ -173,29 +234,6 @@ interface Route {
   trace: IRouteHandler
   unlock: IRouteHandler
   unsubscribe: IRouteHandler
-}
-
-type PathParams = string | RegExp | (string | RegExp)[];
-
-interface IRouteHandler {
-  /**
-   * register HTTP method handlers
-   */
-  (...middlewares: Koa.IMiddleware[]): Route
-  /**
-   * register HTTP method handlers with query matching
-   */
-  (query: Query, ...middleware: Koa.IMiddleware[]): Route
-}
-interface IRouterHandler {
-  /**
-   * register HTTP method handlers
-   */
-  (path: PathParams, ...middlewares: Koa.IMiddleware[]): Router
-  /**
-   * register HTTP method handlers with query matching
-   */
-  (path: PathParams, query: Query, ...middleware: Koa.IMiddleware[]): Router
 }
 
 export = Router
