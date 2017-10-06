@@ -47,23 +47,26 @@ interface IRouterHandler {
 
 interface Options {
   /**
-   * When `true` the route will be case sensitive.
+   * When ``true`` the route will be case sensitive.
    * @default false
    */
   caseSensitive?: boolean
   /**
-   * When `false` the trailing slash is optional.
+   * When ``false`` the trailing slash is optional.
    * @default false
    */
   strict?: boolean
   /**
    * Preserve the ``ctx.params`` values from the parent router.
+   *
    * If the parent and the child have conflicting param names, the child’s value take precedence.
    * @default false
    */
   mergeParams?: boolean
   /**
-   * common prefix of routes in this router
+   * common prefix of routes in this router.
+   *
+   * **Note**: only when the router gets exported would the prefix take effect.
    */
   prefix?: string
 }
@@ -85,14 +88,9 @@ declare class Router {
   /**
    * Use the given middleware function, with optional path, defaulting to "/".
    *
-   * Use (like `.all`) will run for any http METHOD, but it will not add
-   * handlers for those methods so OPTIONS requests will not consider `.use`
-   * functions even if they could respond.
+   * Use (like ``.all``) will run for any http METHOD, but it will not add handlers for those methods so OPTIONS requests will not consider ``.use`` functions even if they could respond.
    *
-   * The other difference is that _route_ path is stripped and not visible
-   * to the handler function. The main effect of this feature is that mounted
-   * handlers can operate without any code changes regardless of the "prefix"
-   * pathname.
+   * The other difference is that ``route`` path is stripped and not visible to the handler function. The main effect of this feature is that mounted handlers can operate without any code changes regardless of the "prefix" pathname.
    *
    * @api public
    */
@@ -100,14 +98,9 @@ declare class Router {
   /**
    * Use the given middleware function, with optional path, defaulting to "/".
    *
-   * Use (like `.all`) will run for any http METHOD, but it will not add
-   * handlers for those methods so OPTIONS requests will not consider `.use`
-   * functions even if they could respond.
+   * Use (like ``.all``) will run for any http METHOD, but it will not add handlers for those methods so OPTIONS requests will not consider ``.use`` functions even if they could respond.
    *
-   * The other difference is that _route_ path is stripped and not visible
-   * to the handler function. The main effect of this feature is that mounted
-   * handlers can operate without any code changes regardless of the "prefix"
-   * pathname.
+   * The other difference is that ``route`` path is stripped and not visible to the handler function. The main effect of this feature is that mounted handlers can operate without any code changes regardless of the "prefix" pathname.
    *
    * @api public
    */
@@ -115,14 +108,9 @@ declare class Router {
   /**
    * Use the given middleware function, with optional path, defaulting to "/".
    *
-   * Use (like `.all`) will run for any http METHOD, but it will not add
-   * handlers for those methods so OPTIONS requests will not consider `.use`
-   * functions even if they could respond.
+   * Use (like ``.all``) will run for any http METHOD, but it will not add handlers for those methods so OPTIONS requests will not consider ``.use`` functions even if they could respond.
    *
-   * The other difference is that _route_ path is stripped and not visible
-   * to the handler function. The main effect of this feature is that mounted
-   * handlers can operate without any code changes regardless of the "prefix"
-   * pathname.
+   * The other difference is that ``route`` path is stripped and not visible to the handler function. The main effect of this feature is that mounted handlers can operate without any code changes regardless of the "prefix" pathname.
    *
    * @api public
    */
@@ -145,7 +133,7 @@ declare class Router {
   mkactivity: IRouterHandler
   mkcol: IRouterHandler
   move: IRouterHandler
-  "m-search": IRouterHandler
+  'm-search': IRouterHandler
   notify: IRouterHandler
   propfind: IRouterHandler
   proppatch: IRouterHandler
@@ -158,31 +146,25 @@ declare class Router {
   unsubscribe: IRouterHandler
 
   /**
-   * Map the given param placeholder `name`(s) to the given callback.
+   * Map the given param placeholder ``name``(s) to the given callback.
    *
-   * Parameter mapping is used to provide pre-conditions to routes
-   * which use normalized placeholders. For example a _:user_id_ parameter
-   * could automatically load a user's information from the database without
-   * any additional code,
+   * Parameter mapping is used to provide pre-conditions to routes which use normalized placeholders. For example a ``:user_id`` parameter could automatically load a user's information from the database without any additional code,
    *
-   * The callback uses the same signature as middleware, the only difference
-   * being that the value of the placeholder is passed, in this case the _id_
-   * of the user. Once the `next()` function is invoked, just like middleware
-   * it will continue on to execute the route, or subsequent parameter functions.
+   * The callback uses the same signature as middleware, the only difference being that the value of the placeholder is passed, in this case the ``id`` of the user. Once the ``next()`` function is invoked, just like middleware it will continue on to execute the route, or subsequent parameter functions.
    *
-   * Just like in middleware, you must either respond to the request or call next
-   * to avoid stalling the request.
+   * Just like in middleware, you must either respond to the request or call next to avoid stalling the request.
    *
    * ```js
-   *  router.param('user_id', async (ctx, next, id, name) => {
-   *    try {
-   *      await User.find(id);
-   *    } catch (e) {
-   *      throw new Error('failed to load user');
-   *    }
-   *    ctx.user = user;
-   *    return next();
-   *  });
+   *router.param('user_id', async (ctx, next, id, name) => {
+   *  let user;
+   *  try {
+   *    user = await User.find(id);
+   *  } catch (e) {
+   *    throw new Error('failed to load user');
+   *  }
+   *  ctx.user = user;
+   *  return next();
+   *});
    * ```
    * @api public
    */
@@ -193,14 +175,13 @@ declare class Router {
    *
    * Each route contains a separate middleware stack and VERB handlers.
    *
-   * See the Route api documentation for details on adding handlers
-   * and middleware to routes.
+   * See the Route api documentation for details on adding handlers and middleware to routes.
    * @api public
    */
   route(path: string, query?: Query): Route
 
   /**
-   * default options of a Router
+   * default options of a Router.
    */
   public static defaultOptions: Options
 }
@@ -223,7 +204,7 @@ interface Route {
   mkactivity: IRouteHandler
   mkcol: IRouteHandler
   move: IRouteHandler
-  "m-search": IRouteHandler
+  'm-search': IRouteHandler
   notify: IRouteHandler
   propfind: IRouteHandler
   proppatch: IRouteHandler
