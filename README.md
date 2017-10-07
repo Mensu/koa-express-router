@@ -4,7 +4,7 @@
 
 [![NPM version](http://img.shields.io/npm/v/koa-express-router.svg?style=flat)](https://npmjs.org/package/koa-express-router) [![node version](https://img.shields.io/node/v/koa-express-router.svg?style=flat)](https://www.npmjs.com/package/koa-express-router) [![NPM Downloads](https://img.shields.io/npm/dm/koa-express-router.svg?style=flat)](https://npmjs.org/package/koa-express-router) [![Build Status](https://travis-ci.org/Mensu/koa-express-router.svg?branch=master)](https://travis-ci.org/Mensu/koa-express-router) [![License](http://img.shields.io/npm/l/koa-express-router.svg?style=flat)](LICENSE)
 
-* Express-style routing using `router.use`, `router.all`, `router.METHOD`, `router.param` etc.
+* Express-style routing using `router.use`, `router.all`, `router.METHOD`, `router.param` etc
 * Support router prefix
 * Support query matching
 
@@ -25,7 +25,7 @@ npm install koa-express-router
 
 Just like ``express``
 
-#### Differences
+##### Differences
 
 - use ``new`` to create instances
 - use ``.routes()`` or ``.routes(false)`` to export a router
@@ -201,3 +201,7 @@ router.post('/',
 - Not ready for production use
 - <s>Not support other less common HTTP methods</s>
 - Not benchmarked
+
+## License
+
+MIT

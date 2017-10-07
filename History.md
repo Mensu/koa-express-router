@@ -1,7 +1,13 @@
+0.3.4 / 2017-10-07
+==================
+
+  * Fix a bug where ``.use()`` cannot accept an array of path ``(string|RegExp)[]`` as the first parameter
+  * Fix ``README`` and ``index.d.ts`` issues
+
 0.3.3 / 2017-10-04
 ==================
 
-  * Fix README and History issues
+  * Fix ``README`` and ``History`` issues
 
 0.3.2 / 2017-10-04
 ==================
